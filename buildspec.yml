@@ -20,11 +20,11 @@ phases:
       - echo "$TAG"
   build:
     commands:
-      - docker build -t puppeteer .
-      - docker tag puppeteer:latest 163859100295.dkr.ecr.us-west-2.amazonaws.com/puppeteer:latest
+      - docker build -t "$REPO:$TAG" .
+      - docker tag "$REPO:$TAG" "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO:$TAG"
   post_build:
     commands:
-      - docker push $(ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(REPO):$(TAG)
+      - docker push "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO:$TAG"
 artifacts:
     files:
       - '**/*'
