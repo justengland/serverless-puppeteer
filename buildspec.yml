@@ -16,7 +16,7 @@ phases:
       - $(aws ecr get-login --no-include-email --region us-west-2)
   build:
     commands:
-      - docker build -t puppeteer
+      - docker build -t puppeteer .
       - docker tag puppeteer:latest 163859100295.dkr.ecr.us-west-2.amazonaws.com/puppeteer:latest
   post_build:
     commands:
