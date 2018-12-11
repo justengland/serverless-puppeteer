@@ -23,6 +23,12 @@ Parameters:
     Description: "Optional S3 bucket, you can use one you have created or you allow it to be processed."
     Type: String
     Default: ""
+  Tag:
+    Description: "The tag used to store the docker image"
+    Type: String
+    Default: "Latest"
+
+
 Conditions:
   NeedsDeloyBucket: !Equals [!Ref DeloyBucketARN, ""]
 Resources:
@@ -72,8 +78,15 @@ Resources:
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/docker:17.09.0
         EnvironmentVariables:
-          - Name: BUILD_BUCKET
+          - Name: DEPLOY_BUCKET
             Value: !Ref DeloyBucket
+          - Name: ACCOUNT_ID
+            Value: !Ref AWS::AccountId
+          - Name: REPO
+            Value: !Ref Name
+          - Name: TAG
+            Value: !Ref Tag
+
       Source:
         Auth:
           Type: OAUTH

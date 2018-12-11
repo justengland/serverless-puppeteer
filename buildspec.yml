@@ -20,7 +20,7 @@ phases:
       - docker tag puppeteer:latest 163859100295.dkr.ecr.us-west-2.amazonaws.com/puppeteer:latest
   post_build:
     commands:
-      - docker push 163859100295.dkr.ecr.us-west-2.amazonaws.com/puppeteer:latest
+      - docker push $(ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(REPO):$(TAG)
 artifacts:
     files:
       - '**/*'
