@@ -13,11 +13,8 @@ phases:
   pre_build:
     commands:
       - export GIT_SHORT_ID="$(git rev-parse --short HEAD)"
+      - export "GIT_SHORT_ID:: $GIT_SHORT_ID"
       - $(aws ecr get-login --no-include-email --region us-west-2)
-      - echo "$ACCOUNT_ID"
-      - echo "$AWS_REGION"
-      - echo "$REPO"
-      - echo "$TAG"
   build:
     commands:
       - docker build -t "$REPO:$TAG" .
