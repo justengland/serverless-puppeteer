@@ -1,0 +1,23 @@
+node_modules/
+npm-debug.log
+docker-compose.dev.yml
+README.md
+standard.webstorm.xml
+*.log
+
+.DS_Store
+*/.next/
+.git
+style.css
+
+out
+
+# JetBrains
+.idea/
+
+# Build working directory
+build/
+
+#log files
+*.log
+*.log.html

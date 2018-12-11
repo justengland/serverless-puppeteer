@@ -1,0 +1,45 @@
+{
+  "name": "serverless-puppeteer",
+  "version": "0.0.1",
+  "description": "A package published for the AWS Serverless Application Repository to integrate Google Chrome and Puppeteer.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "docker build -t justengland/puppeteer .",
+    "build-no-cache": "docker build --no-cache -t justengland/puppeteer .",
+    "cd": "powershell.exe -Command \"if (${docker inspect -f `{`{.State.Running`}`} puppeteer} = $true) { echo ${pwd} }\"",
+    "start": "docker run -it --rm --privileged -v \"~/.aws\":/usr/src/.aws -v \"%cd%\\store\":/app/store justengland/puppeteer sh\"",
+
+    "starter": "powershell.exe -Command \"docker run -it --privileged -v $(pwd)\\store:/app/store -v \"~/.aws\":/usr/src/.aws justengland/puppeteer \"",
+
+    "launch": "powershell.exe -Command \"docker run -dit --name puppeteer --restart unless-stopped -v \"${PWD}\":/usr/src/app -v \"~/.aws\":/usr/src/.aws justengland/puppeteer\"",
+
+
+    "attach": "docker attach puppeteer",
+    "kill": "powershell.exe -Command \"$isRunning = $(docker inspect -f `{`{.State.Running`}`} puppeteer); if ($isRunning -eq $true) { docker kill puppeteer; docker rm puppeteer } else { Write-Host 'Container already killed' }\"",
+    "rm_old": "powershell.exe -Command \"$status = $(docker inspect -f `{`{.State.Status`}`} puppeteer); if ($status -eq 'exited') { docker rm puppeteer }  else { Write-Host 'Container not exited' }\"",
+    "rm": "powershell.exe -Command \"docker rm -f puppeteer; exit 0\"",
+    "rmi": "docker rmi -f justengland/puppeteer",
+    "run": "npm run kill & npm run rm & npm run launch && npm run attach",
+    "restart": "npm run kill & npm run rm & npm run build-no-cache && npm run launch && npm run attach",
+
+
+    "package": "aws cloudformation package --template-file ./cfn/index.yml --s3-bucket lambda-build-store --s3-prefix puppeteer --output-template-file ./cfn/build.yml --profile personal",
+    "deploy": "aws cloudformation deploy --template-file ./cfn/build.yml --stack-name puppeteer --region us-west-2 --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM --parameter-overrides Name=puppeteer Version=latest --profile personal",
+
+    "deploy_nix": "echo \"***  deploy: stampy-$BRANCH\" && aws cloudformation deploy --template-file ./build/cfn-package.yml --stack-name \"$STACKNAME\" --region us-west-2 --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM --parameter-overrides BuildNumber=$BUILDNUMBER Branch=$BRANCH"
+  },
+  "keywords": [
+    "Chrome",
+    "Puppeteer",
+    "Serverless",
+    "Docker",
+    "ECS",
+    "Fargate"
+  ],
+  "author": "Justin England",
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "1.4.0"
+  }
+}

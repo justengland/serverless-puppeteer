@@ -1,0 +1,17 @@
+Parameters:
+  lifecyclePolicyText:
+    Type: String
+  repositoryName:
+    Type: String
+  registryId:
+    Type: String
+Resources:
+  MyRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      LifecyclePolicy:
+        LifecyclePolicyText: !Ref lifecyclePolicyText
+        RegistryId: !Ref registryId
+      RepositoryName: !Ref repositoryName
+Outputs:
+  Arn:

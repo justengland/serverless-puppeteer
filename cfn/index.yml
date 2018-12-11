@@ -1,0 +1,119 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+
+    A package published for the AWS Serverless Application Repository to integrate Google Chrome and Puppeteer.
+Parameters:
+  Name:
+    Default: serverless-puppeteer
+    Description: 'The name used through the stack'
+    Type: String
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9-_]*'
+    ConstraintDescription: 'must begin with a letter and contain only alphanumeric characters or underscores or dashes no spaces.'
+  Branch:
+    Description: 'Branch to use from Repo.'
+    Type: String
+    Default: master
+    AllowedValues:
+      - dev
+      - master
+  Version:
+    Description: 'The version of the application'
+    Type: String
+  DeloyBucketARN:
+    Description: "Optional S3 bucket, you can use one you have created or you allow it to be processed."
+    Type: String
+    Default: ""
+Conditions:
+  NeedsDeloyBucket: !Equals [!Ref DeloyBucketARN, ""]
+Resources:
+  # USE ME like: BucketName: !If [NeedsDeloyBucket, !Ref DeloyBucket, !Ref DeloyBucketARN]
+  DeloyBucket:
+    Type: AWS::S3::Bucket
+    Condition: NeedsDeloyBucket
+    Properties:
+      BucketName: !Sub deploy-${Name}-${AWS::StackName}
+  ContainerRepository:
+    Type: 'AWS::ECR::Repository'
+    Properties:
+      RepositoryName: !Ref Name
+
+
+  # Build
+#      Build:
+#        Type: AWS::CodeBuild::Project
+#        Properties:
+#          Name: !Join ['-', [ !Ref 'AWS::StackName', 'build'] ]
+#          Description: A build for nodejs projects
+#          ServiceRole: !GetAtt BuildRole.Arn
+#          Artifacts:
+#              Type: CODEPIPELINE
+#              Name: Phantom
+#          Environment:
+#            Type: linuxContainer
+#            ComputeType: BUILD_GENERAL1_SMALL
+#            Image: aws/codebuild/docker:17.09.0
+#            EnvironmentVariables:
+#            - Name: BUILD_BUCKET
+#              Value: !Ref DeloyBucket
+#          Source:
+#            Type: CODEPIPELINE
+#          TimeoutInMinutes: 60
+
+
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      ServiceRole: !Ref CodeBuildRole
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/docker:17.09.0
+        EnvironmentVariables:
+          - Name: BUILD_BUCKET
+            Value: !Ref DeloyBucket
+      Source:
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 20
+#        VpcConfig:
+#          VpcId: !Ref CodeBuildVPC
+#          Subnets: [!Ref CodeBuildSubnet]
+#          SecurityGroupIds: [!Ref CodeBuildSecurityGroup]
+#        Cache:
+#          Type: S3
+#          Location: mybucket/prefix
+
+
+# https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr_managed_policies.html
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: ['sts:AssumeRole']
+          Effect: Allow
+          Principal:
+            Service: [codebuild.amazonaws.com]
+        Version: '2012-10-17'
+      Path: /
+      Policies:
+        - PolicyName: CodeBuildAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action:
+                - 'logs:*'
+                - 'ecs:*'
+                - 'ecr:*'
+                Effect: Allow
+                Resource: '*'
+
+
+
+Outputs:
+  ContainerRepository:
+    Description: 'The url for the project'
+    Value: !GetAtt ContainerRepository.Arn
+
+
