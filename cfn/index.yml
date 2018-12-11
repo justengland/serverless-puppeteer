@@ -59,13 +59,14 @@ Resources:
 #            Type: CODEPIPELINE
 #          TimeoutInMinutes: 60
 
-
+# https://www.itonaut.com/2018/06/18/use-github-source-in-aws-codebuild-project-using-aws-cloudformation/
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
+      Name: !Sub ${AWS::StackName}-build
       ServiceRole: !Ref CodeBuildRole
       Artifacts:
-        Type: CODEPIPELINE
+        Type: no_artifacts
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
@@ -74,7 +75,10 @@ Resources:
           - Name: BUILD_BUCKET
             Value: !Ref DeloyBucket
       Source:
-        Type: CODEPIPELINE
+        Auth:
+          Type: OAUTH
+        Location: https://github.com/justengland/serverless-puppeteer.git
+        Type: GITHUB
       TimeoutInMinutes: 20
 #        VpcConfig:
 #          VpcId: !Ref CodeBuildVPC
