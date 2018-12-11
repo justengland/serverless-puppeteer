@@ -14,10 +14,10 @@ phases:
     commands:
       - export GIT_SHORT_ID="$(git rev-parse --short HEAD)"
       - $(aws ecr get-login --no-include-email --region us-west-2)
-      - echo $(ACCOUNT_ID)
-      - echo $(AWS_REGION)
-      - echo $(REPO)
-      - echo $(TAG)
+      - echo "$ACCOUNT_ID"
+      - echo "$AWS_REGION"
+      - echo "$REPO"
+      - echo "$TAG"
   build:
     commands:
       - docker build -t puppeteer .
