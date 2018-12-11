@@ -1,1 +1,6 @@
+# cloudformation build file
 **/build.yml
+
+node_modules/
+*.log
+.DS_Store
