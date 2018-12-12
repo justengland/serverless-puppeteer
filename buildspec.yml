@@ -11,7 +11,7 @@ phases:
     commands:
       - docker build -t "$REPO:$TAG" .
       - docker tag "$REPO:$TAG" "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO:$TAG"
-      - docker run --rm --privileged -v /app/store "$REPO:$TAG" node node_modules/.bin/jest tests/test.js
+      - docker run --rm --privileged "$REPO:$TAG" node node_modules/.bin/jest tests/test.js
   post_build:
     commands:
       - if [ -z "$CODEBUILD_BUILD_SUCCEEDING" ]; docker push "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO:$TAG"

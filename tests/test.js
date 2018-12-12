@@ -6,7 +6,7 @@ const readFile = util.promisify(fs.readFile);
 // A simple example test
 describe('Test rendering', async () => {
   it('should render a color wheel', async () => {
-    const out_file = './store/foo-example.png'
+    const out_file = './test.png'
     const htmlContent = `
       <!doctype html>
       <html><body><canvas id="surface"></canvas></body></html>
