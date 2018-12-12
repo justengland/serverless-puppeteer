@@ -21,6 +21,7 @@ phases:
       - docker tag "$REPO:$TAG" "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO:$TAG"
   post_build:
     commands:
+      - docker run -it --rm --privileged "$REPO:$TAG" node node_modules/.bin/jest tests/test.js\"
       - docker push "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO:$TAG"
 artifacts:
     files:
