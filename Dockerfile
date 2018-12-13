@@ -1,4 +1,4 @@
-FROM node:carbon-alpine
+FROM node:dubnium-alpine
 
 RUN apk update && apk upgrade && \
     echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
