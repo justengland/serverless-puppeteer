@@ -11,12 +11,13 @@ phases:
     commands:
       - docker build -t "$REPO:$TAG" .
       - docker tag "$REPO:$TAG" "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO:$TAG"
-      - docker run --name "tester" --privileged "$REPO:$TAG" node node_modules/.bin/jest tests/test.js_____
+
+      - docker run --name "tester" --privileged "$REPO:$TAG" node node_modules/.bin/jest tests/test.js
       - docker inspect "tester" --format='{{.State.ExitCode}}'
   post_build:
     commands:
       - docker push "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO:$TAG"
-       docker rm --force "tester" --privileged "$REPO:$TAG" node node_modules/.bin/jest tests/test.js
+       docker rm --force "tester"
 artifacts:
     files:
       - '**/*'
